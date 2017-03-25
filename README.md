@@ -7,9 +7,9 @@ Počeštění DataGridu WPF Extended Toolkitu (http://wpftoolkit.codeplex.com/)
 
 ## Použití:
 
-Je třeba mít referencovaný wpftoolkit (ať už stažený nebo NuGet). Vytvořeno pro verzi 3.0
+Je třeba mít referencovaný wpftoolkit 3.0 (ať už stažený nebo NuGet). 
 
-ResourceDictionary z tohoto repozitáře je třeba přidat jako MergedDictionary do Resource, například takto:
+ResourceDictionary ([Themes/xcdg.cz.xaml](Themes/xcdg.cz.xaml)) z tohoto repozitáře je třeba přidat jako MergedDictionary do Resource, například takto:
 
     <UserControl x:Class="(...)"
                  xmlns:xcdgm="clr-namespace:Xceed.Wpf.DataGrid.Markup;assembly=Xceed.Wpf.DataGrid" />
