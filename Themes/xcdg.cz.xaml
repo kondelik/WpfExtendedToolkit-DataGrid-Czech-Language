@@ -1,0 +1,230 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:xcdgConv="clr-namespace:Xceed.Wpf.DataGrid.Converters;assembly=Xceed.Wpf.DataGrid"
+                    xmlns:xcdg="clr-namespace:Xceed.Wpf.DataGrid;assembly=Xceed.Wpf.DataGrid"
+                    xmlns:xcdgViews="clr-namespace:Xceed.Wpf.DataGrid.Views;assembly=Xceed.Wpf.DataGrid">
+  <xcdgConv:StringFormatMultiConverter x:Key="StringFormatMultiConverter" />
+
+<!--
+
+   Odpoznámkujte pro roztažení DataGridu na maximální šířku (něco jako HorizontalAligment="Stretch" VerticalAligment="Stretch"
+   Nevím proč to není default.
+   Nicméně default to není, tak to tu je zapoznámkované...
+
+  <Style TargetType="{x:Type xcdg:GroupHeaderControl}">
+    <Setter Property="MinWidth"
+            Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}},
+                               Path=ActualWidth}"/>
+
+  </Style>
+  <Style TargetType="{x:Type xcdg:ColumnManagerRow}">
+    <Setter Property="MinWidth"
+            Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}},
+                               Path=ActualWidth}"/>
+  </Style>
+
+-->
+
+  <Style TargetType="{x:Type xcdg:HierarchicalGroupByControl}">
+    <Setter Property="NoGroupContent"
+            Value="Sem přetáhněte jednotlivé sloupce pro seskupení." />
+  </Style>
+
+
+  <DataTemplate DataType="{x:Type xcdg:Group}" >
+    <!-- This ContentControl must be focusable false to avoid getting the focus 
+           when performing KeyboardNavigation -->
+    <ContentControl x:Name="groupContentPresenter"
+                    Focusable="False"
+                    Content="{Binding}">
+      <ContentControl.ContentTemplate>
+        <!-- defaultGroupTemplate -->
+        <DataTemplate>
+          <StackPanel Orientation="Horizontal"
+                      VerticalAlignment="Center">
+
+            <ContentPresenter Content="{Binding Title}"
+                              ContentTemplate="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.TitleTemplate}"
+                              ContentTemplateSelector="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.TitleTemplateSelector}"
+                              VerticalAlignment="Center" />
+
+            <TextBlock Text=": "
+                       VerticalAlignment="Center" />
+            <ContentPresenter ContentTemplate="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.ValueTemplate}"
+                              ContentTemplateSelector="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.ValueTemplateSelector}"
+                              VerticalAlignment="Center">
+              <ContentPresenter.Content>
+                <MultiBinding Converter="{StaticResource StringFormatMultiConverter}">
+                  <Binding Path="Value" />
+                  <Binding Path="DataContext.ValueStringFormat"
+                           RelativeSource="{RelativeSource TemplatedParent}" />
+                  <Binding Path="DataContext.ValueStringFormatCulture"
+                           RelativeSource="{RelativeSource TemplatedParent}" />
+                </MultiBinding>
+              </ContentPresenter.Content>
+            </ContentPresenter>
+
+            <TextBlock Text=" ("
+                       VerticalAlignment="Center" />
+            <TextBlock Text="{Binding ItemCount}"
+                       VerticalAlignment="Center" />
+            <TextBlock Text=" "
+                       VerticalAlignment="Center" />
+            <TextBlock x:Name="suffixRun"
+                       Text="položek"
+                       VerticalAlignment="Center" />
+            <TextBlock Text=")"
+                       VerticalAlignment="Center" />
+
+          </StackPanel>
+
+          <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding ItemCount}"
+                         Value="1">
+              <Setter TargetName="suffixRun"
+                      Property="Text"
+                      Value="položka" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ItemCount}"
+                         Value="2">
+              <Setter TargetName="suffixRun"
+                      Property="Text"
+                      Value="položky" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ItemCount}"
+                         Value="3">
+              <Setter TargetName="suffixRun"
+                      Property="Text"
+                      Value="položky" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ItemCount}"
+                         Value="4">
+              <Setter TargetName="suffixRun"
+                      Property="Text"
+                      Value="položky" />
+            </DataTrigger>
+          </DataTemplate.Triggers>
+        </DataTemplate>
+      </ContentControl.ContentTemplate>
+    </ContentControl>
+
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=(xcdg:DataGridControl.DataGridContext).DataGridControl.View, Converter={x:Static xcdgConv:TypeToBooleanConverter.Singleton}, ConverterParameter={x:Type xcdgViews:TableflowView}}"
+                   Value="True">
+        <Setter Property="ContentTemplate"
+                TargetName="groupContentPresenter">
+          <Setter.Value>
+            <!-- stickyGroupTemplate -->
+            <DataTemplate>
+              <StackPanel Orientation="Horizontal"
+                          VerticalAlignment="Center">
+                <ContentControl ContentTemplate="{Binding RelativeSource={RelativeSource Self}, Path=(xcdg:GroupNavigationControl.Group).ValueTemplate}"
+                                ContentTemplateSelector="{Binding RelativeSource={RelativeSource Self}, Path=(xcdg:GroupNavigationControl.Group).ValueTemplateSelector}"
+                                TextBlock.FontWeight="Bold"
+                                VerticalAlignment="Center">
+                  <ContentControl.Content>
+                    <MultiBinding Converter="{StaticResource StringFormatMultiConverter}">
+                      <Binding Path="(xcdg:GroupNavigationControl.Group).Value"
+                               RelativeSource="{RelativeSource Self}"/>
+                      <Binding Path="(xcdg:GroupNavigationControl.Group).ValueStringFormat"
+                               RelativeSource="{RelativeSource Self}" />
+                      <Binding Path="(xcdg:GroupNavigationControl.Group).ValueStringFormatCulture"
+                               RelativeSource="{RelativeSource Self}" />
+                    </MultiBinding>
+                  </ContentControl.Content>
+                </ContentControl>
+
+                <TextBlock Text=" ("
+                           VerticalAlignment="Center" />
+                <TextBlock Text="{Binding ItemCount}"
+                           VerticalAlignment="Center" />
+                <TextBlock Text=" "
+                           VerticalAlignment="Center" />
+                <TextBlock x:Name="suffixRun"
+                           Text="položek"
+                           VerticalAlignment="Center" />
+                <TextBlock Text=")"
+                           VerticalAlignment="Center" />
+
+              </StackPanel>
+
+              <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding ItemCount}"
+                             Value="1">
+                  <Setter TargetName="suffixRun"
+                          Property="Text"
+                          Value="položka" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ItemCount}"
+                             Value="2">
+                  <Setter TargetName="suffixRun"
+                          Property="Text"
+                          Value="položky" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ItemCount}"
+                             Value="3">
+                  <Setter TargetName="suffixRun"
+                          Property="Text"
+                          Value="položky" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ItemCount}"
+                             Value="4">
+                  <Setter TargetName="suffixRun"
+                          Property="Text"
+                          Value="položky" />
+                </DataTrigger>
+              </DataTemplate.Triggers>
+            </DataTemplate>
+          </Setter.Value>
+        </Setter>
+      </DataTrigger>
+    </DataTemplate.Triggers>
+  </DataTemplate>
+
+  <Style TargetType="{x:Type xcdg:GroupByControl}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="xcdg:GroupByControl">
+          <Border BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}">
+
+            <Grid>
+              <Border Opacity="0.5"
+                      Background="{TemplateBinding Background}"/>
+
+              <!-- This ContentPresenter displays the value of the NoGroupContent property
+                 of the GroupByControl. This content must only be displayed when there are
+                 no groups present, so we set its Visibility to Collapsed by default and
+                 it is made visible via a trigger. -->
+              <ContentPresenter x:Name="noGroupContentPresenter"
+                                Margin="{TemplateBinding Padding}"
+                                Content="{TemplateBinding NoGroupContent}"
+                                VerticalAlignment="Center"
+                                Visibility="Collapsed" />
+
+              <!-- The GroupByControl is an ItemsControl, so it must have an ItemsPresenter in its
+                 Template in order to layout and show its child items. The default ItemsPanel
+                 of the GroupByControl is a "StaircasePanel", which layout its items in a
+                 staircase-like pattern and draws connecting lines between the items. -->
+              <ItemsPresenter Margin="{TemplateBinding Padding}" />
+            </Grid>
+          </Border>
+
+          <ControlTemplate.Triggers>
+
+            <!-- When there are no groups, make the NoGroupContent visible. -->
+            <Trigger Property="HasItems"
+                     Value="False">
+
+              <Setter TargetName="noGroupContentPresenter"
+                      Property="Visibility"
+                      Value="Visible"/>
+            </Trigger>
+
+          </ControlTemplate.Triggers>
+
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+</ResourceDictionary>
